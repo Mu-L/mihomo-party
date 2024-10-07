@@ -1,13 +1,13 @@
-### Breaking Changes
-
-- 此版本修改了应用的显示名称，macOS用户可能无法自动更新，需要手动删除 `/Applications/mihomo-party.app`
-
 ### New Features
 
-- 修改应用在 macOS 和 Linux 下的显示名称为 `Mihomo Party`
-- 默认禁用外部控制端口
+- 设置悬浮窗标题为 `Mihomo Party Floating`,以区分主窗口，Wayland 用户可以单独为其设置窗口规则以解决置顶失效的问题
+- 提高悬浮窗置顶等级，避免被其他窗口遮挡
+- 悬浮窗增加边框阴影效果，避免与背景色相近时无法分辨
+- 优化订阅卡片信息显示布局
+- 允许在开启悬浮窗的情况下禁用托盘图标
+- 再次点击悬浮窗按钮关闭窗口
 
 ### Bug Fixes
 
-- 修复 TrafficMonitor 勾选内置网速显示后无法取消勾选的问题
-- 修复 TrafficMonitor 显示宽度不正确的问题
+- 修复开启轻量模式后 TrafficMonitor 重复启动的问题
+- 修复 悬浮窗置顶失效的问题

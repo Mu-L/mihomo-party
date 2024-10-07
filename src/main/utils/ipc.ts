@@ -63,9 +63,9 @@ import {
 import { getRuntimeConfig, getRuntimeConfigStr } from '../core/factory'
 import { listWebdavBackups, webdavBackup, webdavDelete, webdavRestore } from '../resolve/backup'
 import { getInterfaces } from '../sys/interface'
-import { copyEnv } from '../resolve/tray'
+import { closeTrayIcon, copyEnv, showTrayIcon } from '../resolve/tray'
 import { registerShortcut } from '../resolve/shortcut'
-import { mainWindow } from '..'
+import { closeMainWindow, mainWindow, showMainWindow, triggerMainWindow } from '..'
 import {
   applyTheme,
   fetchThemes,
@@ -81,6 +81,7 @@ import v8 from 'v8'
 import { getGistUrl } from '../resolve/gistApi'
 import { getImageDataURL } from './image'
 import { startMonitor } from '../resolve/trafficMonitor'
+import { closeFloatingWindow, showContextMenu, showFloatingWindow } from '../resolve/floatingWindow'
 
 function ipcErrorWrapper<T>( // eslint-disable-next-line @typescript-eslint/no-explicit-any
   fn: (...args: any[]) => Promise<T> // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -209,6 +210,14 @@ export function registerIpcMainHandlers(): void {
   ipcMain.handle('isAlwaysOnTop', () => {
     return mainWindow?.isAlwaysOnTop()
   })
+  ipcMain.handle('showTrayIcon', () => ipcErrorWrapper(showTrayIcon)())
+  ipcMain.handle('closeTrayIcon', () => ipcErrorWrapper(closeTrayIcon)())
+  ipcMain.handle('showMainWindow', showMainWindow)
+  ipcMain.handle('closeMainWindow', closeMainWindow)
+  ipcMain.handle('triggerMainWindow', triggerMainWindow)
+  ipcMain.handle('showFloatingWindow', () => ipcErrorWrapper(showFloatingWindow)())
+  ipcMain.handle('closeFloatingWindow', () => ipcErrorWrapper(closeFloatingWindow)())
+  ipcMain.handle('showContextMenu', () => ipcErrorWrapper(showContextMenu)())
   ipcMain.handle('openFile', (_e, type, id, ext) => openFile(type, id, ext))
   ipcMain.handle('openDevTools', () => {
     mainWindow?.webContents.openDevTools()

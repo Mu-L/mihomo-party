@@ -207,10 +207,13 @@ interface IAppConfig {
   core: 'mihomo' | 'mihomo-alpha'
   proxyDisplayMode: 'simple' | 'full'
   proxyDisplayOrder: 'default' | 'delay' | 'name'
+  profileDisplayDate?: 'expire' | 'update'
   envType?: ('bash' | 'cmd' | 'powershell')[]
   proxyCols: 'auto' | '1' | '2' | '3' | '4'
   connectionDirection: 'asc' | 'desc'
   connectionOrderBy: 'time' | 'upload' | 'download' | 'uploadSpeed' | 'downloadSpeed'
+  disableTray?: boolean
+  showFloatingWindow?: boolean
   connectionCardStatus?: CardStatus
   dnsCardStatus?: CardStatus
   logCardStatus?: CardStatus
@@ -261,6 +264,7 @@ interface IAppConfig {
   useNameserverPolicy: boolean
   nameserverPolicy: { [key: string]: string | string[] }
   showWindowShortcut?: string
+  showFloatingWindowShortcut?: string
   triggerSysProxyShortcut?: string
   triggerTunShortcut?: string
   ruleModeShortcut?: string

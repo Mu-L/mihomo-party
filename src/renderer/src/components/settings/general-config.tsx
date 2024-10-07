@@ -7,6 +7,8 @@ import useSWR from 'swr'
 import {
   applyTheme,
   checkAutoRun,
+  closeFloatingWindow,
+  closeTrayIcon,
   copyEnv,
   disableAutoRun,
   enableAutoRun,
@@ -15,6 +17,8 @@ import {
   importThemes,
   relaunchApp,
   resolveThemes,
+  showFloatingWindow,
+  showTrayIcon,
   startMonitor,
   writeTheme
 } from '@renderer/utils/ipc'
@@ -37,6 +41,8 @@ const GeneralConfig: React.FC = () => {
     useDockIcon = true,
     showTraffic = true,
     proxyInTray = true,
+    disableTray = false,
+    showFloatingWindow: showFloating = false,
     useWindowFrame = false,
     autoQuitWithoutCore = false,
     autoQuitWithoutCoreDelay = 60,
@@ -175,6 +181,36 @@ const GeneralConfig: React.FC = () => {
             <SelectItem key="powershell">PowerShell</SelectItem>
           </Select>
         </SettingItem>
+        <SettingItem title="显示悬浮窗" divider>
+          <Switch
+            size="sm"
+            isSelected={showFloating}
+            onValueChange={async (v) => {
+              await patchAppConfig({ showFloatingWindow: v })
+              if (v) {
+                showFloatingWindow()
+              } else {
+                closeFloatingWindow()
+              }
+            }}
+          />
+        </SettingItem>
+        {showFloating && (
+          <SettingItem title="禁用托盘图标" divider>
+            <Switch
+              size="sm"
+              isSelected={disableTray}
+              onValueChange={async (v) => {
+                await patchAppConfig({ disableTray: v })
+                if (v) {
+                  closeTrayIcon()
+                } else {
+                  showTrayIcon()
+                }
+              }}
+            />
+          </SettingItem>
+        )}
         {platform !== 'linux' && (
           <>
             <SettingItem title="托盘菜单显示节点信息" divider>

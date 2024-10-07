@@ -17,6 +17,7 @@ import { existsSync, writeFileSync } from 'fs'
 import { exePath, taskDir } from './utils/dirs'
 import path from 'path'
 import { startMonitor } from './resolve/trafficMonitor'
+import { showFloatingWindow } from './resolve/floatingWindow'
 
 let quitTimeout: NodeJS.Timeout | null = null
 export let mainWindow: BrowserWindow | null = null
@@ -149,9 +150,15 @@ app.whenReady().then(async () => {
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
+  const { showFloatingWindow: showFloating = false, disableTray = false } = await getAppConfig()
   registerIpcMainHandlers()
   await createWindow()
-  await createTray()
+  if (showFloating) {
+    showFloatingWindow()
+  }
+  if (!disableTray) {
+    await createTray()
+  }
   await initShortcut()
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
@@ -191,7 +198,8 @@ export async function createWindow(): Promise<void> {
   const { useWindowFrame = false } = await getAppConfig()
   const mainWindowState = windowStateKeeper({
     defaultWidth: 800,
-    defaultHeight: 600
+    defaultHeight: 600,
+    file: 'window-state.json'
   })
   // https://github.com/electron/electron/issues/16521#issuecomment-582955104
   Menu.setApplicationMenu(null)
@@ -269,13 +277,20 @@ export async function createWindow(): Promise<void> {
     shell.openExternal(details.url)
     return { action: 'deny' }
   })
-
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+  }
+}
+
+export function triggerMainWindow(): void {
+  if (mainWindow?.isVisible()) {
+    closeMainWindow()
+  } else {
+    showMainWindow()
   }
 }
 
@@ -286,5 +301,11 @@ export function showMainWindow(): void {
     }
     mainWindow.show()
     mainWindow.focusOnWebView()
+  }
+}
+
+export function closeMainWindow(): void {
+  if (mainWindow) {
+    mainWindow.close()
   }
 }

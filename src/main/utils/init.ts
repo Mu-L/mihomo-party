@@ -148,7 +148,9 @@ async function migration(): Promise<void> {
     ],
     appTheme = 'system',
     envType = [process.platform === 'win32' ? 'powershell' : 'bash'],
-    useSubStore = true
+    useSubStore = true,
+    showFloatingWindow = false,
+    disableTray = false
   } = await getAppConfig()
   const {
     'external-controller-pipe': externalControllerPipe,
@@ -193,20 +195,20 @@ async function migration(): Promise<void> {
     await patchAppConfig({ envType: [envType] })
   }
   // use unix socket
-  if (process.platform !== 'win32' && externalControllerUnix !== '/tmp/mihomo-party.sock') {
-    await patchControledMihomoConfig({ 'external-controller-unix': '/tmp/mihomo-party.sock' })
+  if (externalControllerUnix) {
+    await patchControledMihomoConfig({ 'external-controller-unix': undefined })
   }
   // use named pipe
-  if (
-    process.platform === 'win32' &&
-    externalControllerPipe !== '\\\\.\\pipe\\MihomoParty\\mihomo'
-  ) {
+  if (externalControllerPipe) {
     await patchControledMihomoConfig({
-      'external-controller-pipe': '\\\\.\\pipe\\MihomoParty\\mihomo'
+      'external-controller-pipe': undefined
     })
   }
   if (externalController === undefined) {
     await patchControledMihomoConfig({ 'external-controller': '' })
+  }
+  if (!showFloatingWindow && disableTray) {
+    await patchAppConfig({ disableTray: false })
   }
 }
 
